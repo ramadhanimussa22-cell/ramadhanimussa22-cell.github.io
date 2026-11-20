@@ -3,32 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#5425a8">
 <title>Pi Market</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:#f4f5fa;color:#222}
-header{background:#432080;color:white;padding:22px 16px}
-header h1{font-size:27px}
-header p{margin-top:6px;color:#e5dafa}
-.search{padding:15px}
-.search input{width:100%;padding:14px;border:1px solid #ddd;border-radius:10px;font-size:16px}
-.categories{display:flex;gap:10px;overflow:auto;padding:0 15px 15px}
-.categories button{padding:10px 16px;border:0;border-radius:20px;background:#e5dcf5;color:#432080;white-space:nowrap}
-.categories button.active{background:#432080;color:white}
-h2{padding:10px 15px}
-.products{display:grid;grid-template-columns:repeat(2,1fr);gap:13px;padding:15px}
-.product{background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px #0001}
-.product img{width:100%;height:135px;object-fit:cover}
-.info{padding:11px}
-.info h3{font-size:16px;margin-bottom:7px}
-.price{color:#432080;font-weight:bold;margin-bottom:10px}
-.product button,.back,.contact{background:#432080;color:white;border:0;padding:11px;border-radius:7px;width:100%;cursor:pointer}
-.details{display:none;padding:18px}
-.details img{width:100%;max-height:270px;object-fit:cover;border-radius:12px}
-.details h2{padding:15px 0}
-.details p{line-height:1.6;margin:10px 0}
-footer{text-align:center;background:#432080;color:white;padding:20px;margin-top:20px}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+body{background:#f5f3fa;color:#29233b}
+header{background:linear-gradient(135deg,#5425a8,#854bd7);color:white;text-align:center;padding:28px 15px}
+header h1{font-size:30px;margin-bottom:8px}
+header p{font-size:14px}
+.container{width:94%;max-width:1000px;margin:22px auto}
+.actions{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+input,textarea{width:100%;padding:13px;border:1px solid #ddd;border-radius:9px;font-size:15px;margin-bottom:12px}
+#search{flex:1;min-width:150px;margin:0}
+button{background:#632db4;color:white;border:0;border-radius:9px;padding:12px 16px;font-size:15px;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.6}
+.add-button{background:#f0aa16;color:#241900}
+.form-box{display:none;background:white;padding:18px;border-radius:12px;margin-bottom:22px;box-shadow:0 3px 12px #0001}
+.form-box h2{color:#5425a8;margin-bottom:15px}
+textarea{height:95px;resize:vertical}
+.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:15px;margin-top:15px}
+.product{background:white;border-radius:12px;overflow:hidden;box-shadow:0 3px 12px #0001}
+.product img{width:100%;height:145px;object-fit:cover;background:#eee}
+.info{padding:12px}
+.info h3{font-size:16px;margin-bottom:8px;overflow-wrap:anywhere}
+.price{color:#632db4;font-weight:bold;margin:10px 0}
+.viewButton{width:100%;font-size:13px}
+.message{text-align:center;padding:22px;color:#777;grid-column:1/-1}
+.modal{display:none;position:fixed;inset:0;background:#0009;z-index:10;padding:20px;overflow:auto}
+.modal-content{background:white;max-width:450px;margin:35px auto;padding:20px;border-radius:12px}
+.modal-content img{width:100%;max-height:260px;object-fit:cover;border-radius:9px}
+.modal-content h2{margin-top:12px}
+.modal-content p{line-height:1.5;margin:12px 0;overflow-wrap:anywhere}
+.close-button{background:#777;width:100%;margin-top:10px}
+footer{text-align:center;padding:25px;color:#777;font-size:13px}
+@media(max-width:380px){.products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.product img{height:120px}}
 </style>
 </head>
 
@@ -36,172 +47,228 @@ footer{text-align:center;background:#432080;color:white;padding:20px;margin-top:
 
 <header>
 <h1>π Pi Market</h1>
-<p>Your Marketplace. Buy and Sell Easily.</p>
+<p>Buy and Sell Easily with Pi Network</p>
 </header>
 
-<div id="home">
-<div class="search">
-<input type="text" id="search" placeholder="Search products..." oninput="searchProducts()">
+<main class="container">
+
+<div class="actions">
+<input id="search" type="search" placeholder="Search products..." oninput="searchProducts()">
+<button class="add-button" onclick="toggleForm()">+ Add Product</button>
 </div>
 
-<div class="categories">
-<button class="active" onclick="filterProducts('All',this)">All</button>
-<button onclick="filterProducts('Phones',this)">Phones</button>
-<button onclick="filterProducts('Shoes',this)">Shoes</button>
-<button onclick="filterProducts('Electronics',this)">Electronics</button>
-</div>
+<section class="form-box" id="addForm">
+<h2>Publish Your Product</h2>
+<input id="productName" type="text" placeholder="Product name">
+<input id="productPrice" type="number" min="0" step="any" placeholder="Price in Pi">
+<input id="productImage" type="url" placeholder="Product image URL">
+<textarea id="productDescription" placeholder="Product description"></textarea>
+<button id="publishButton" onclick="addProduct()">Publish Product</button>
+<button class="close-button" onclick="toggleForm()">Cancel</button>
+</section>
 
-<h2>Featured Products</h2>
-<div style="padding:15px">
-<button onclick="document.getElementById('addForm').style.display='block'"
-style="background:#432080;color:white;padding:14px;border:0;border-radius:9px;width:100%;font-size:16px">
-+ Add New Product
-</button>
-</div>
+<h2>Latest Products</h2>
+<section class="products" id="products">
+<p class="message">Loading products...</p>
+</section>
 
-<div id="addForm" style="display:none;padding:15px;background:white;margin:15px;border-radius:12px">
-<h2>Add Your Product</h2>
+</main>
 
-<input id="productName" placeholder="Product Name" style="width:100%;padding:12px;margin:8px 0">
-
-<input id="productPrice" type="number" placeholder="Price in Pi" style="width:100%;padding:12px;margin:8px 0">
-
-<input id="productImage" placeholder="Product Image URL" style="width:100%;padding:12px;margin:8px 0">
-
-<textarea id="productDescription" placeholder="Product Description" style="width:100%;padding:12px;margin:8px 0"></textarea>
-
-<button onclick="addProduct()" style="background:#432080;color:white;padding:12px;border:0;border-radius:8px;width:100%">
-Publish Product
-</button>
-</div>
-<div class="products">
-
-<div class="product" data-category="Phones">
-<img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500" alt="Smartphone">
-<div class="info">
-<h3>Smartphone</h3>
-<p class="price">250 Pi</p>
-<button onclick="showDetails('Smartphone','250 Pi','Modern smartphone with excellent features.','https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=700')">View Details</button>
-</div>
-</div>
-
-<div class="product" data-category="Shoes">
-<img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500" alt="Shoes">
-<div class="info">
-<h3>Sport Shoes</h3>
-<p class="price">80 Pi</p>
-<button onclick="showDetails('Sport Shoes','80 Pi','Comfortable sports shoes for everyday use.','https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=700')">View Details</button>
-</div>
-</div>
-
-<div class="product" data-category="Electronics">
-<img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500" alt="Headphones">
-<div class="info">
-<h3>Headphones</h3>
-<p class="price">45 Pi</p>
-<button onclick="showDetails('Headphones','45 Pi','Enjoy clear sound and comfortable listening.','https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=700')">View Details</button>
-</div>
-</div>
-
-<div class="product" data-category="Electronics">
-<img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500" alt="Smart Watch">
-<div class="info">
-<h3>Smart Watch</h3>
-<p class="price">65 Pi</p>
-<button onclick="showDetails('Smart Watch','65 Pi','Stylish smartwatch for daily activities.','https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=700')">View Details</button>
-</div>
-</div>
-
-</div>
-</div>
-
-<div class="details" id="details">
-<button class="back" onclick="goBack()">← Back to Products</button>
-<img id="detailImage" src="" alt="Product">
+<div class="modal" id="detailsModal" onclick="closeOnBackground(event)">
+<div class="modal-content">
+<img id="detailImage" src="" alt="Product image">
 <h2 id="detailName"></h2>
-<h2 id="detailPrice"></h2>
+<h3 class="price" id="detailPrice"></h3>
 <p id="detailDescription"></p>
-<button class="contact" onclick="alert('Seller contact coming soon!')">Contact Seller</button>
+<button class="close-button" onclick="closeDetails()">Close</button>
+</div>
 </div>
 
 <footer>
-<p>π Pi Market © 2026</p>
+<p>Pi Market © 2026</p>
 <p>Powered by Pi Network</p>
 </footer>
 
 <script>
-function showDetails(name,price,description,image){
-document.getElementById('home').style.display='none';
-document.getElementById('details').style.display='block';
-document.getElementById('detailName').innerText=name;
-document.getElementById('detailPrice').innerText=price;
-document.getElementById('detailDescription').innerText=description;
-document.getElementById('detailImage').src=image;
-window.scrollTo(0,0);
+const SUPABASE_URL = "https://gimditgfzeljttkcjupb.supabase.co";
+const SUPABASE_KEY = "sb_publishable_R-cOF1TxuRLhtb3tG4rHXw_WuKqpHzF";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+let allProducts = [];
+
+function safeImage(url) {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol === "https:" || parsed.protocol === "http:") {
+      return parsed.href;
+    }
+  } catch (e) {}
+  return "https://placehold.co/400x300?text=Pi+Market";
 }
 
-function goBack(){
-document.getElementById('details').style.display='none';
-document.getElementById('home').style.display='block';
+function toggleForm() {
+  const form = document.getElementById("addForm");
+  form.style.display = form.style.display === "block" ? "none" : "block";
 }
 
-function searchProducts(){
-let q=document.getElementById('search').value.toLowerCase();
-document.querySelectorAll('.product').forEach(p=>{
-p.style.display=p.innerText.toLowerCase().includes(q)?'block':'none';
-});
+async function loadProducts() {
+  const container = document.getElementById("products");
+  container.innerHTML = '<p class="message">Loading products...</p>';
+
+  const { data, error } = await supabaseClient
+    .from("products")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    container.innerHTML = '<p class="message">Could not load products. Please refresh.</p>';
+    return;
+  }
+
+  allProducts = data || [];
+  displayProducts(allProducts);
 }
 
-function filterProducts(category,button){
-document.querySelectorAll('.categories button').forEach(b=>b.classList.remove('active'));
-button.classList.add('active');
-document.querySelectorAll('.product').forEach(p=>{
-p.style.display=(category==='All'||p.dataset.category===category)?'block':'none';
-});
-}function addProduct(){
-let name=document.getElementById('productName').value.trim();
-let price=document.getElementById('productPrice').value;
-let image=document.getElementById('productImage').value.trim();
-let description=document.getElementById('productDescription').value.trim();
+function displayProducts(products) {
+  const container = document.getElementById("products");
 
-if(!name || !price || !image || !description){
-alert('Please fill in all fields');
-return;
+  if (!products.length) {
+    container.innerHTML = '<p class="message">No products available yet.</p>';
+    return;
+  }
+
+  container.innerHTML = "";
+
+  products.forEach(function(product) {
+    const card = document.createElement("article");
+    card.className = "product";
+
+    const img = document.createElement("img");
+    img.src = safeImage(product.image_url);
+    img.alt = product.name || "Product";
+    img.onerror = function() {
+      img.src = "https://placehold.co/400x300?text=Pi+Market";
+    };
+
+    const info = document.createElement("div");
+    info.className = "info";
+
+    const name = document.createElement("h3");
+    name.textContent = product.name;
+
+    const price = document.createElement("p");
+    price.className = "price";
+    price.textContent = product.price + " Pi";
+
+    const view = document.createElement("button");
+    view.className = "viewButton";
+    view.textContent = "View Details";
+    view.onclick = function() {
+      showDetails(product.id);
+    };
+
+    info.append(name, price, view);
+    card.append(img, info);
+    container.appendChild(card);
+  });
 }
 
-let product=document.createElement('div');
-product.className='product';
+function searchProducts() {
+  const query = document.getElementById("search").value.toLowerCase().trim();
 
-product.innerHTML=`
-<img src="${image}" alt="${name}">
-<div class="info">
-<h3>${name}</h3>
-<p class="price">${price} Pi</p>
-<button class="viewButton">View Details</button>
-</div>
-`;
+  const filtered = allProducts.filter(function(product) {
+    return String(product.name || "").toLowerCase().includes(query) ||
+      String(product.description || "").toLowerCase().includes(query);
+  });
 
-product.querySelector('.viewButton').onclick=function(){
-showDetails(name,price+' Pi',description,image);
-};
-
-document.querySelector('.products').prepend(product);
-
-document.getElementById('addForm').style.display='none';
-
-document.getElementById('productName').value='';
-document.getElementById('productPrice').value='';
-document.getElementById('productImage').value='';
-document.getElementById('productDescription').value='';
-
-alert('Product added successfully!');
+  displayProducts(filtered);
 }
+
+async function addProduct() {
+  const name = document.getElementById("productName").value.trim();
+  const price = document.getElementById("productPrice").value;
+  const image = document.getElementById("productImage").value.trim();
+  const description = document.getElementById("productDescription").value.trim();
+  const button = document.getElementById("publishButton");
+
+  if (!name || !price || !image || !description) {
+    alert("Please fill in all fields.");
+    return;
+  }
+
+  if (!Number.isFinite(Number(price)) || Number(price) <= 0) {
+    alert("Please enter a valid price.");
+    return;
+  }
+
+  if (!/^https?:\/\//i.test(image)) {
+    alert("Please enter a valid image URL starting with https:// or http://");
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Publishing...";
+
+  const { error } = await supabaseClient
+    .from("products")
+    .insert([{
+      name: name,
+      description: description,
+      price: Number(price),
+      image_url: image
+    }]);
+
+  button.disabled = false;
+  button.textContent = "Publish Product";
+
+  if (error) {
+    console.error(error);
+    alert("Product was not saved. Please check the database permissions.");
+    return;
+  }
+
+  document.getElementById("productName").value = "";
+  document.getElementById("productPrice").value = "";
+  document.getElementById("productImage").value = "";
+  document.getElementById("productDescription").value = "";
+  document.getElementById("addForm").style.display = "none";
+
+  alert("Product published successfully!");
+  await loadProducts();
+}
+
+function showDetails(id) {
+  const product = allProducts.find(function(item) {
+    return String(item.id) === String(id);
+  });
+
+  if (!product) return;
+
+  document.getElementById("detailImage").src = safeImage(product.image_url);
+  document.getElementById("detailName").textContent = product.name;
+  document.getElementById("detailPrice").textContent = product.price + " Pi";
+  document.getElementById("detailDescription").textContent = product.description;
+
+  document.getElementById("detailsModal").style.display = "block";
+}
+
+function closeDetails() {
+  document.getElementById("detailsModal").style.display = "none";
+}
+
+function closeOnBackground(event) {
+  if (event.target.id === "detailsModal") {
+    closeDetails();
+  }
+}
+
+loadProducts();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-const SUPABASE_URL = "https://gimditgfzeljttkcjupb.supabase.co/rest/v1/";
-const SUPABASE_KEY = "sb_publishable_R-cOF1TxuRLhtb3tG4rHXw_WuKqpHzF;
 
 </body>
 </html>
