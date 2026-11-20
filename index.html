@@ -6,26 +6,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pi Market</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f4f5fa;color:#222}
-header{background:#54218c;color:white;padding:22px 16px;text-align:center}
-header h1{margin:0;font-size:28px}
-header p{margin:8px 0 0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f5f4fa;color:#222}
+header{background:linear-gradient(135deg,#54208f,#873dcc);color:white;padding:25px 18px;text-align:center}
+header h1{font-size:30px;margin-bottom:8px}
+header p{font-size:14px}
 .search{padding:18px}
-.search input{width:100%;padding:14px;border:1px solid #ddd;border-radius:10px;font-size:16px}
+.search input{width:100%;padding:14px;border:1px solid #ddd;border-radius:12px;font-size:15px}
 .container{padding:0 16px 25px}
-h2{color:#54218c}
-.products{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.product{background:white;border-radius:12px;padding:14px;box-shadow:0 2px 7px #ddd}
-.product .emoji{font-size:42px;text-align:center;padding:12px}
-.product h3{margin:8px 0}
-.price{color:#54218c;font-weight:bold}
-button{background:#54218c;color:white;border:0;padding:12px;border-radius:8px;cursor:pointer}
-.sell{width:100%;margin:18px 0;font-size:16px}
-footer{text-align:center;padding:20px;color:#777}
+.heading{display:flex;justify-content:space-between;align-items:center;margin:10px 0 18px}
+.heading h2{font-size:20px}
+.products{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.product{background:white;border-radius:14px;padding:13px;box-shadow:0 2px 9px #00000010}
+.emoji{background:#f2eafa;border-radius:12px;height:105px;display:flex;align-items:center;justify-content:center;font-size:45px}
+.product h3{font-size:15px;margin:12px 0 6px}
+.price{color:#7133a8;font-weight:bold;margin-bottom:10px}
+.product button{width:100%;padding:10px;border:0;border-radius:9px;background:#7133a8;color:white;font-weight:bold}
+.sell{width:100%;padding:15px;margin-top:22px;background:#54208f;color:white;border:0;border-radius:12px;font-size:16px;font-weight:bold}
+#sellForm{display:none;background:white;padding:16px;border-radius:12px;margin-top:15px}
+#sellForm input{width:100%;padding:12px;margin:7px 0;border:1px solid #ddd;border-radius:8px}
+#sellForm button{padding:12px;background:#54208f;color:white;border:0;border-radius:8px;width:100%;margin-top:8px}
+footer{text-align:center;padding:25px;background:#26123d;color:white;margin-top:20px;font-size:13px;line-height:1.8}
 </style>
 </head>
 <body>
+
 <header>
 <h1>π Pi Market</h1>
 <p>Buy and Sell Easily with Pi</p>
@@ -36,38 +41,48 @@ footer{text-align:center;padding:20px;color:#777}
 </div>
 
 <div class="container">
+<div class="heading">
 <h2>Featured Products</h2>
+</div>
+
 <div class="products" id="products">
 <div class="product">
 <div class="emoji">📱</div>
 <h3>Smartphone</h3>
 <p class="price">25 π</p>
-<button onclick="alert('Product details coming soon!')">View Details</button>
+<button onclick="alert('Contact seller coming soon!')">View Details</button>
 </div>
 
 <div class="product">
 <div class="emoji">👟</div>
 <h3>Shoes</h3>
 <p class="price">5 π</p>
-<button onclick="alert('Product details coming soon!')">View Details</button>
+<button onclick="alert('Contact seller coming soon!')">View Details</button>
 </div>
 
 <div class="product">
 <div class="emoji">⌚</div>
 <h3>Smart Watch</h3>
 <p class="price">8 π</p>
-<button onclick="alert('Product details coming soon!')">View Details</button>
+<button onclick="alert('Contact seller coming soon!')">View Details</button>
 </div>
 
 <div class="product">
 <div class="emoji">🎧</div>
 <h3>Headphones</h3>
 <p class="price">3 π</p>
-<button onclick="alert('Product details coming soon!')">View Details</button>
+<button onclick="alert('Contact seller coming soon!')">View Details</button>
 </div>
 </div>
 
-<button class="sell" onclick="alert('Selling feature coming soon!')">+ Sell Your Product</button>
+<button class="sell" onclick="toggleSell()">+ Sell Your Product</button>
+
+<div id="sellForm">
+<h3>Add Your Product</h3>
+<input id="productName" placeholder="Product name">
+<input id="productPrice" type="number" placeholder="Price in Pi">
+<button onclick="addProduct()">Publish Product</button>
+</div>
 </div>
 
 <footer>
@@ -77,13 +92,40 @@ footer{text-align:center;padding:20px;color:#777}
 
 <script>
 function searchProducts(){
-const query=document.getElementById('search').value.toLowerCase();
-document.querySelectorAll('.product').forEach(product=>{
-product.style.display=product.innerText.toLowerCase().includes(query)?'block':'none';
+const q=document.getElementById('search').value.toLowerCase();
+document.querySelectorAll('.product').forEach(p=>{
+p.style.display=p.innerText.toLowerCase().includes(q)?'block':'none';
 });
 }
+
+function toggleSell(){
+const form=document.getElementById('sellForm');
+form.style.display=form.style.display==='block'?'none':'block';
+}
+
+function addProduct(){
+const name=document.getElementById('productName').value.trim();
+const price=document.getElementById('productPrice').value;
+
+if(!name||!price||Number(price)<=0){
+alert('Please enter a product name and valid price.');
+return;
+}
+
+const product=document.createElement('div');
+product.className='product';
+product.innerHTML='<div class="emoji">🛍️</div><h3></h3><p class="price"></p><button onclick="alert(\'Contact seller coming soon!\')">View Details</button>';
+product.querySelector('h3').textContent=name;
+product.querySelector('.price').textContent=price+' π';
+
+document.getElementById('products').appendChild(product);
+document.getElementById('productName').value='';
+document.getElementById('productPrice').value='';
+document.getElementById('sellForm').style.display='none';
+alert('Product added successfully!');
+}
 </script>
+
 </body>
 </html>
-
 
