@@ -197,6 +197,16 @@ document.getElementById('productDescription').value='';
 alert('Product added successfully!');
 }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script>
+const SUPABASE_URL = "WEKA_API_URL_HAPA";
+const SUPABASE_KEY = "WEKA_PUBLISHABLE_KEY_HAPA";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+</script>
 </body>
 </html>
