@@ -1,12 +1,89 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Market App</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pi Market</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f5fa;color:#222}
+header{background:#54218c;color:white;padding:22px 16px;text-align:center}
+header h1{margin:0;font-size:28px}
+header p{margin:8px 0 0}
+.search{padding:18px}
+.search input{width:100%;padding:14px;border:1px solid #ddd;border-radius:10px;font-size:16px}
+.container{padding:0 16px 25px}
+h2{color:#54218c}
+.products{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.product{background:white;border-radius:12px;padding:14px;box-shadow:0 2px 7px #ddd}
+.product .emoji{font-size:42px;text-align:center;padding:12px}
+.product h3{margin:8px 0}
+.price{color:#54218c;font-weight:bold}
+button{background:#54218c;color:white;border:0;padding:12px;border-radius:8px;cursor:pointer}
+.sell{width:100%;margin:18px 0;font-size:16px}
+footer{text-align:center;padding:20px;color:#777}
+</style>
 </head>
 <body>
-    <h1>Welcome to Market App</h1>
-    <p>Buy and sell easily.</p>
+<header>
+<h1>π Pi Market</h1>
+<p>Buy and Sell Easily with Pi</p>
+</header>
+
+<div class="search">
+<input type="search" id="search" placeholder="Search products..." oninput="searchProducts()">
+</div>
+
+<div class="container">
+<h2>Featured Products</h2>
+<div class="products" id="products">
+<div class="product">
+<div class="emoji">📱</div>
+<h3>Smartphone</h3>
+<p class="price">25 π</p>
+<button onclick="alert('Product details coming soon!')">View Details</button>
+</div>
+
+<div class="product">
+<div class="emoji">👟</div>
+<h3>Shoes</h3>
+<p class="price">5 π</p>
+<button onclick="alert('Product details coming soon!')">View Details</button>
+</div>
+
+<div class="product">
+<div class="emoji">⌚</div>
+<h3>Smart Watch</h3>
+<p class="price">8 π</p>
+<button onclick="alert('Product details coming soon!')">View Details</button>
+</div>
+
+<div class="product">
+<div class="emoji">🎧</div>
+<h3>Headphones</h3>
+<p class="price">3 π</p>
+<button onclick="alert('Product details coming soon!')">View Details</button>
+</div>
+</div>
+
+<button class="sell" onclick="alert('Selling feature coming soon!')">+ Sell Your Product</button>
+</div>
+
+<footer>
+<p>Pi Market © 2026</p>
+<p>Powered by Pi Network</p>
+</footer>
+
+<script>
+function searchProducts(){
+const query=document.getElementById('search').value.toLowerCase();
+document.querySelectorAll('.product').forEach(product=>{
+product.style.display=product.innerText.toLowerCase().includes(query)?'block':'none';
+});
+}
+</script>
 </body>
 </html>
+
+
