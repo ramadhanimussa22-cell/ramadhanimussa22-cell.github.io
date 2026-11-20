@@ -52,7 +52,28 @@ footer{text-align:center;background:#432080;color:white;padding:20px;margin-top:
 </div>
 
 <h2>Featured Products</h2>
+<div style="padding:15px">
+<button onclick="document.getElementById('addForm').style.display='block'"
+style="background:#432080;color:white;padding:14px;border:0;border-radius:9px;width:100%;font-size:16px">
++ Add New Product
+</button>
+</div>
 
+<div id="addForm" style="display:none;padding:15px;background:white;margin:15px;border-radius:12px">
+<h2>Add Your Product</h2>
+
+<input id="productName" placeholder="Product Name" style="width:100%;padding:12px;margin:8px 0">
+
+<input id="productPrice" type="number" placeholder="Price in Pi" style="width:100%;padding:12px;margin:8px 0">
+
+<input id="productImage" placeholder="Product Image URL" style="width:100%;padding:12px;margin:8px 0">
+
+<textarea id="productDescription" placeholder="Product Description" style="width:100%;padding:12px;margin:8px 0"></textarea>
+
+<button onclick="addProduct()" style="background:#432080;color:white;padding:12px;border:0;border-radius:8px;width:100%">
+Publish Product
+</button>
+</div>
 <div class="products">
 
 <div class="product" data-category="Phones">
@@ -137,6 +158,43 @@ button.classList.add('active');
 document.querySelectorAll('.product').forEach(p=>{
 p.style.display=(category==='All'||p.dataset.category===category)?'block':'none';
 });
+}function addProduct(){
+let name=document.getElementById('productName').value.trim();
+let price=document.getElementById('productPrice').value;
+let image=document.getElementById('productImage').value.trim();
+let description=document.getElementById('productDescription').value.trim();
+
+if(!name || !price || !image || !description){
+alert('Please fill in all fields');
+return;
+}
+
+let product=document.createElement('div');
+product.className='product';
+
+product.innerHTML=`
+<img src="${image}" alt="${name}">
+<div class="info">
+<h3>${name}</h3>
+<p class="price">${price} Pi</p>
+<button class="viewButton">View Details</button>
+</div>
+`;
+
+product.querySelector('.viewButton').onclick=function(){
+showDetails(name,price+' Pi',description,image);
+};
+
+document.querySelector('.products').prepend(product);
+
+document.getElementById('addForm').style.display='none';
+
+document.getElementById('productName').value='';
+document.getElementById('productPrice').value='';
+document.getElementById('productImage').value='';
+document.getElementById('productDescription').value='';
+
+alert('Product added successfully!');
 }
 </script>
 
