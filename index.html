@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -132,7 +131,10 @@ const piSdkReady = (async function(){
 if(!window.Pi){
 throw new Error("Open this app inside Pi Browser.");
 }
-await window.Pi.init({version:"2.0"});
+await window.Pi.init({
+version:"2.0",
+sandbox:false
+});
 })();
 
 piSdkReady.then(function(){
