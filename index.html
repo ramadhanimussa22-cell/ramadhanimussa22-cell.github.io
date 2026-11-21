@@ -1,462 +1,568 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#5425a8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://sdk.minepi.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; connect-src 'self' https://socialchain.app https://backend.appstudio-u7cm9zhmha0ruwv8.piappengine.com https://gimditgfzeljttkcjupb.supabase.co; img-src 'self' data: blob: https:; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'">
-<title>Pi Market</title>
+<title>PioneerCart - Pi Market</title>
+
 <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
-body{background:#f5f3fa;color:#29233b}
-header{background:linear-gradient(135deg,#5425a8,#854bd7);color:white;text-align:center;padding:28px 15px}
-header h1{font-size:30px;margin-bottom:8px}
-.container{width:94%;max-width:1000px;margin:22px auto}
-.auth-box{background:white;padding:16px;border-radius:12px;margin-bottom:20px;box-shadow:0 3px 12px #0001}
-.auth-box p{line-height:1.5;margin:8px 0 12px;color:#655d73}
-.auth-actions{display:flex;gap:10px;flex-wrap:wrap}
-#authStatus{font-size:14px;color:#655d73;margin-top:10px}
-#verifiedUser{font-weight:bold;color:#5425a8}
-.actions{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
-input,textarea{width:100%;padding:13px;border:1px solid #ddd;border-radius:9px;font-size:15px;margin-bottom:12px}
-#search{flex:1;min-width:150px;margin:0}
-button{background:#632db4;color:white;border:0;border-radius:9px;padding:12px 16px;font-size:15px;font-weight:bold;cursor:pointer}
-button:disabled{opacity:.6}
-.add-button{background:#f0aa16;color:#241900}
-.form-box{display:none;background:white;padding:18px;border-radius:12px;margin-bottom:22px;box-shadow:0 3px 12px #0001}
-.form-box h2{color:#5425a8;margin-bottom:15px}
-textarea{height:95px;resize:vertical}
-#imagePreview{display:none;width:100%;max-height:230px;object-fit:contain;margin:5px 0 15px;border-radius:10px;background:#eee}
-.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:15px;margin-top:15px}
-.product{background:white;border-radius:12px;overflow:hidden;box-shadow:0 3px 12px #0001}
-.product img{width:100%;height:145px;object-fit:cover;background:#eee}
-.info{padding:12px}
-.info h3{font-size:16px;margin-bottom:8px;overflow-wrap:anywhere}
-.price{color:#632db4;font-weight:bold;margin:10px 0}
-.viewButton{width:100%;font-size:13px}
-.message{text-align:center;padding:22px;color:#777;grid-column:1/-1}
-.modal{display:none;position:fixed;inset:0;background:#0009;z-index:10;padding:20px;overflow:auto}
-.modal-content{background:white;max-width:450px;margin:35px auto;padding:20px;border-radius:12px}
-.modal-content img{width:100%;max-height:260px;object-fit:cover;border-radius:9px}
-.modal-content h2{margin-top:12px}
-.modal-content p{line-height:1.5;margin:12px 0;overflow-wrap:anywhere}
-.close-button{background:#777;width:100%;margin-top:10px}
-footer{text-align:center;padding:25px;color:#777;font-size:13px}
-@media(max-width:380px){.products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.product img{height:120px}}
+:root {
+  --purple:#5425a8;
+  --dark:#29134d;
+  --light:#f5f1fc;
+  --white:#fff;
+  --text:#252033;
+  --muted:#777;
+  --red:#d93636;
+  --green:#16834a;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--light);
+  color:var(--text);
+}
+header {
+  background:linear-gradient(135deg,var(--dark),var(--purple));
+  color:white;
+  padding:22px 16px;
+}
+.top {
+  max-width:1100px;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.logo {font-size:23px;font-weight:bold}
+.logo span {color:#ffd66b}
+button {
+  border:0;
+  border-radius:9px;
+  padding:12px 16px;
+  font-weight:bold;
+  cursor:pointer;
+  background:var(--purple);
+  color:white;
+}
+button:disabled {opacity:.6;cursor:not-allowed}
+.login {background:#fff;color:var(--purple)}
+main {max-width:1100px;margin:auto;padding:18px}
+.welcome {
+  background:white;
+  padding:20px;
+  border-radius:14px;
+  margin-bottom:18px;
+}
+h2 {margin-top:0;color:var(--dark)}
+.status {font-size:14px;color:var(--muted);margin-top:8px}
+.search {
+  width:100%;
+  padding:15px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  font-size:16px;
+  margin:10px 0 20px;
+}
+.panel {
+  background:white;
+  padding:20px;
+  border-radius:14px;
+  margin-bottom:22px;
+}
+input,textarea {
+  width:100%;
+  padding:13px;
+  margin:7px 0 13px;
+  border:1px solid #ddd;
+  border-radius:9px;
+  font-size:15px;
+}
+textarea {min-height:90px;resize:vertical}
+label {font-size:14px;font-weight:bold}
+.hint {font-size:12px;color:var(--muted)}
+.preview {
+  width:100%;
+  max-height:220px;
+  object-fit:contain;
+  display:none;
+  margin:10px 0;
+  border-radius:10px;
+}
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:16px;
+}
+.product {
+  background:white;
+  border-radius:13px;
+  overflow:hidden;
+  box-shadow:0 2px 9px #0000000d;
+}
+.product img {
+  width:100%;
+  height:190px;
+  object-fit:cover;
+  background:#eee;
+}
+.details {padding:14px}
+.details h3 {margin:0 0 8px}
+.price {color:var(--purple);font-size:19px;font-weight:bold}
+.description {font-size:14px;color:#555;line-height:1.5}
+.seller {font-size:12px;color:var(--muted)}
+.actions {display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.whatsapp {background:#16834a;text-decoration:none;color:white;padding:11px;border-radius:8px;font-size:13px;font-weight:bold}
+.delete {background:var(--red);font-size:13px}
+.empty {text-align:center;color:var(--muted);padding:30px}
+.notice {
+  padding:12px;
+  border-radius:8px;
+  margin:10px 0;
+  font-size:14px;
+  display:none;
+}
+.error {background:#ffe9e9;color:#a21e1e}
+.success {background:#e7f7ed;color:#176b3c}
+footer {
+  background:var(--dark);
+  color:white;
+  text-align:center;
+  padding:25px;
+  margin-top:35px;
+  font-size:13px;
+}
+.hidden {display:none!important}
+@media(max-width:500px) {
+  .logo {font-size:20px}
+  main {padding:12px}
+  .grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .product img {height:135px}
+  .details {padding:10px}
+  .details h3 {font-size:15px}
+  .price {font-size:16px}
+  .whatsapp {padding:9px;font-size:11px}
+}
 </style>
 </head>
 
 <body>
+
 <header>
-<h1>π Pi Market</h1>
-<p>Buy and Sell Easily with Pi Network</p>
+  <div class="top">
+    <div class="logo">Pioneer<span>Cart</span></div>
+    <button class="login" id="loginBtn" onclick="loginWithPi()">
+      Login with Pi
+    </button>
+  </div>
 </header>
 
-<main class="container">
+<main>
 
-<section class="auth-box">
-<h2>Pi Network Account</h2>
-<p>Sign in with your Pi account to publish products.</p>
-<div class="auth-actions">
-<button id="piLoginButton" onclick="signInWithPi()">Sign in with Pi</button>
-<button id="piLogoutButton" style="display:none;background:#777" onclick="signOutFromPi()">Sign out</button>
-</div>
-<p id="authStatus">Preparing Pi authentication...</p>
-<p id="verifiedUser"></p>
-</section>
+  <section class="welcome">
+    <h2>Welcome to PioneerCart</h2>
+    <p>Discover products, connect with sellers and trade using the Pi ecosystem.</p>
+    <div id="userStatus" class="status">You are browsing as a guest.</div>
+    <div id="message" class="notice"></div>
+    <button id="logoutBtn" class="hidden" onclick="logout()">Logout</button>
+  </section>
 
-<div class="actions">
-<input id="search" type="search" placeholder="Search products..." oninput="searchProducts()">
-<button class="add-button" onclick="toggleForm()">+ Add Product</button>
-</div>
+  <section class="panel hidden" id="publishPanel">
+    <h2>Publish Your Product</h2>
 
-<section class="form-box" id="addForm">
-<h2>Publish Your Product</h2>
-<input id="productName" type="text" placeholder="Product name">
-<input id="productPrice" type="number" min="0" step="any" placeholder="Price in Pi">
+    <form id="productForm">
+      <label>Product Name</label>
+      <input id="productName" maxlength="100" required placeholder="Enter product name">
 
-<label for="productImage" style="display:block;margin-bottom:10px;font-weight:bold">
-Choose Product Image
-</label>
-<input id="productImage" type="file" accept="image/*" onchange="previewImage(event)">
-<img id="imagePreview" alt="Image preview">
-<textarea id="productDescription" placeholder="Product description"></textarea>
+      <label>Description</label>
+      <textarea id="productDescription" maxlength="2000" required placeholder="Describe your product"></textarea>
 
-<button id="publishButton" onclick="addProduct()">Publish Product</button>
-<button class="close-button" onclick="toggleForm()">Cancel</button>
-</section>
+      <label>Price (Pi)</label>
+      <input id="productPrice" type="number" min="0.01" step="0.01" required placeholder="Enter price in Pi">
 
-<h2>Latest Products</h2>
-<section class="products" id="products">
-<p class="message">Loading products...</p>
-</section>
+      <label>WhatsApp Number</label>
+      <input id="productWhatsapp" type="tel" maxlength="20" required placeholder="+255...">
+
+      <label>Product Image</label>
+      <input id="productImage" type="file" accept="image/jpeg,image/png,image/webp" required>
+      <div class="hint">JPG, PNG or WebP. Maximum image size: 4 MB.</div>
+      <img id="imagePreview" class="preview" alt="Product preview">
+
+      <button id="publishBtn" type="submit">Publish Product</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Explore Products</h2>
+    <input id="searchInput" class="search" type="search" placeholder="Search products..." oninput="renderProducts()">
+    <div id="productGrid" class="grid">
+      <div class="empty">Loading products...</div>
+    </div>
+  </section>
+
 </main>
 
-<div class="modal" id="detailsModal" onclick="closeOnBackground(event)">
-<div class="modal-content">
-<img id="detailImage" src="" alt="Product image">
-<h2 id="detailName"></h2>
-<h3 class="price" id="detailPrice"></h3>
-<p id="detailDescription"></p>
-<button class="close-button" onclick="closeDetails()">Close</button>
-</div>
-</div>
-
 <footer>
-<p>Pi Market © 2026</p>
-<p>Powered by Pi Network</p>
+  PioneerCart | Buy and Sell Easily with Pi
 </footer>
 
 <script>
 const SUPABASE_URL = "https://gimditgfzeljttkcjupb.supabase.co";
 const SUPABASE_KEY = "sb_publishable_R-cOF1TxuRLhtb3tG4rHXw_WuKqpHzF";
+const FUNCTION_URL = SUPABASE_URL + "/functions/v1/pi-auth";
 
-const APP_STUDIO_LOGIN_URL =
-"https://backend.appstudio-u7cm9zhmha0ruwv8.piappengine.com/pi/auth/v1/login";
-
-const supabaseClient = window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
 );
 
-let allProducts = [];
-let selectedImage = null;
-let appStudioSessionToken = null;
-let verifiedPiUser = null;
+let piAccessToken = null;
+let currentUser = null;
+let products = [];
+let piReady = false;
 
-const piSdkReady = (async function(){
-if(!window.Pi){
-throw new Error("Open this app inside Pi Browser.");
-}
-await window.Pi.init({
-version:"2.0",
-sandbox:false
-});
-})();
-
-piSdkReady.then(function(){
-document.getElementById("authStatus").textContent =
-"Pi authentication is ready. Sign in to continue.";
-}).catch(function(error){
-console.warn(error);
-document.getElementById("authStatus").textContent =
-"Open this app in Pi Browser to sign in.";
-});
-
-function onIncompletePaymentFound(payment){
-console.warn("Incomplete payment:",payment);
-document.getElementById("authStatus").textContent =
-"An incomplete Pi payment was detected.";
+function showMessage(message, type = "success") {
+  const box = document.getElementById("message");
+  box.textContent = message;
+  box.className = "notice " + type;
+  box.style.display = "block";
 }
 
-async function signInWithPi(){
-const button=document.getElementById("piLoginButton");
-const status=document.getElementById("authStatus");
-
-button.disabled=true;
-status.textContent="Connecting to Pi Network...";
-
-try{
-await piSdkReady;
-
-const authResult=await window.Pi.authenticate(
-["username"],
-onIncompletePaymentFound
-);
-
-if(!authResult || !authResult.accessToken){
-throw new Error("Pi access token was not received.");
+function hideMessage() {
+  document.getElementById("message").style.display = "none";
 }
 
-status.textContent="Verifying account with App Studio...";
+function updateLoginUI() {
+  const loginBtn = document.getElementById("loginBtn");
+  const publishPanel = document.getElementById("publishPanel");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const userStatus = document.getElementById("userStatus");
 
-const response=await fetch(APP_STUDIO_LOGIN_URL,{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-accessToken:authResult.accessToken
-})
-});
-
-const result=await response.json();
-
-if(!response.ok){
-throw new Error(result.message || result.error ||
-"App Studio verification failed.");
+  if (currentUser) {
+    loginBtn.classList.add("hidden");
+    publishPanel.classList.remove("hidden");
+    logoutBtn.classList.remove("hidden");
+    userStatus.textContent = "Logged in as Pi user: @" + currentUser.username;
+  } else {
+    loginBtn.classList.remove("hidden");
+    publishPanel.classList.add("hidden");
+    logoutBtn.classList.add("hidden");
+    userStatus.textContent = "You are browsing as a guest.";
+  }
 }
 
-if(!result.sessionToken || !result.user ||
-!result.user.uid || !result.user.username){
-throw new Error("Invalid verified session from App Studio.");
+async function callBackend(data) {
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "apikey": SUPABASE_KEY
+    },
+    body: JSON.stringify(data)
+  });
+
+  const result = await response.json().catch(() => ({}));
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.error || "Server request failed");
+  }
+
+  return result;
 }
 
-appStudioSessionToken=result.sessionToken;
+async function initializePi() {
+  if (!window.Pi) {
+    showMessage("Pi SDK is unavailable. Please open this app in Pi Browser.", "error");
+    return;
+  }
 
-verifiedPiUser={
-uid:result.user.uid,
-username:result.user.username
-};
-
-button.style.display="none";
-document.getElementById("piLogoutButton").style.display="inline-block";
-
-status.textContent="Pi account successfully verified.";
-document.getElementById("verifiedUser").textContent=
-"Signed in as @"+verifiedPiUser.username;
-
-}catch(error){
-console.error(error);
-appStudioSessionToken=null;
-verifiedPiUser=null;
-status.textContent=error.message || "Pi sign in failed.";
-alert(status.textContent);
-}finally{
-button.disabled=false;
-button.textContent="Sign in with Pi";
-}
+  try {
+    await window.Pi.init({
+      version: "2.0",
+      sandbox: true
+    });
+    piReady = true;
+  } catch (error) {
+    console.error("Pi initialization:", error);
+    showMessage("Could not initialize Pi Network. Open this app in Pi Browser.", "error");
+  }
 }
 
-function signOutFromPi(){
-appStudioSessionToken=null;
-verifiedPiUser=null;
+async function loginWithPi() {
+  hideMessage();
 
-document.getElementById("piLoginButton").style.display="inline-block";
-document.getElementById("piLogoutButton").style.display="none";
-document.getElementById("authStatus").textContent="You have signed out.";
-document.getElementById("verifiedUser").textContent="";
+  if (!piReady || !window.Pi) {
+    showMessage("Pi Network is not ready. Please open the app in Pi Browser.", "error");
+    return;
+  }
+
+  const button = document.getElementById("loginBtn");
+  button.disabled = true;
+  button.textContent = "Connecting...";
+
+  try {
+    const auth = await window.Pi.authenticate(
+      ["username"],
+      function(incompletePayment) {
+        console.log("Incomplete payment:", incompletePayment);
+      }
+    );
+
+    if (!auth || !auth.accessToken) {
+      throw new Error("Pi did not return an access token.");
+    }
+
+    const result = await callBackend({
+      action: "verify",
+      accessToken: auth.accessToken
+    });
+
+    piAccessToken = auth.accessToken;
+    currentUser = {
+      uid: result.uid,
+      username: result.username
+    };
+
+    updateLoginUI();
+    showMessage("Pi login successful. Welcome @" + currentUser.username);
+    await loadProducts();
+
+  } catch (error) {
+    console.error("Pi login error:", error);
+    showMessage(error.message || "Pi login failed.", "error");
+  } finally {
+    button.disabled = false;
+    button.textContent = "Login with Pi";
+  }
 }
 
-function safeImage(url){
-try{
-const parsed=new URL(url);
-if(parsed.protocol==="https:" || parsed.protocol==="http:"){
-return parsed.href;
-}
-}catch(e){}
-return "https://placehold.co/400x300?text=Pi+Market";
+function logout() {
+  piAccessToken = null;
+  currentUser = null;
+  updateLoginUI();
+  showMessage("You have logged out.");
 }
 
-function toggleForm(){
-if(!appStudioSessionToken || !verifiedPiUser){
-alert("Please sign in with Pi before publishing a product.");
-return;
-}
-const form=document.getElementById("addForm");
-form.style.display=form.style.display==="block"?"none":"block";
-}
+async function loadProducts() {
+  const grid = document.getElementById("productGrid");
+  grid.innerHTML = '<div class="empty">Loading products...</div>';
 
-function previewImage(event){
-const file=event.target.files[0];
-const preview=document.getElementById("imagePreview");
+  const { data, error } = await db
+    .from("products")
+    .select("*")
+    .order("created_at", { ascending: false });
 
-if(!file){
-selectedImage=null;
-preview.style.display="none";
-return;
-}
+  if (error) {
+    console.error("Product loading error:", error);
+    grid.innerHTML = '<div class="empty">Could not load products. Please try again.</div>';
+    return;
+  }
 
-if(!file.type.startsWith("image/")){
-alert("Please choose an image.");
-event.target.value="";
-return;
+  products = data || [];
+  renderProducts();
 }
 
-if(file.size>5*1024*1024){
-alert("Image must be smaller than 5 MB.");
-event.target.value="";
-return;
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, function(char) {
+    return {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[char];
+  });
 }
 
-selectedImage=file;
-preview.src=URL.createObjectURL(file);
-preview.style.display="block";
+function renderProducts() {
+  const grid = document.getElementById("productGrid");
+  const search = document.getElementById("searchInput").value.trim().toLowerCase();
+
+  const filtered = products.filter(product => {
+    return (
+      String(product.name || "").toLowerCase().includes(search) ||
+      String(product.description || "").toLowerCase().includes(search)
+    );
+  });
+
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="empty">No products found.</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(product => {
+    const ownProduct = currentUser &&
+      product.seller_uid &&
+      product.seller_uid === currentUser.uid;
+
+    const phone = String(product.whatsapp || "").replace(/\D/g, "");
+    const whatsappLink = phone
+      ? "https://wa.me/" + phone
+      : "";
+
+    const image = product.image_url
+      ? escapeHTML(product.image_url)
+      : "";
+
+    return `
+      <article class="product">
+        ${image
+          ? `<img src="${image}" alt="${escapeHTML(product.name)}" loading="lazy">`
+          : `<div class="empty">No image</div>`
+        }
+        <div class="details">
+          <h3>${escapeHTML(product.name)}</h3>
+          <div class="price">${escapeHTML(product.price)} Pi</div>
+          <p class="description">${escapeHTML(product.description)}</p>
+          <div class="seller">Seller: @${escapeHTML(product.seller_username || "Seller")}</div>
+          <div class="actions">
+            ${whatsappLink
+              ? `<a class="whatsapp" href="${whatsappLink}" target="_blank" rel="noopener">WhatsApp Seller</a>`
+              : ""
+            }
+            ${ownProduct
+              ? `<button class="delete" onclick="deleteProduct(${Number(product.id)})">Delete</button>`
+              : ""
+            }
+          </div>
+        </div>
+      </article>
+    `;
+  }).join("");
 }
 
-async function loadProducts(){
-const container=document.getElementById("products");
-container.innerHTML='<p class="message">Loading products...</p>';
+document.getElementById("productImage").addEventListener("change", function() {
+  const file = this.files[0];
+  const preview = document.getElementById("imagePreview");
 
-const {data,error}=await supabaseClient
-.from("products")
-.select("*")
-.order("created_at",{ascending:false});
+  if (!file) {
+    preview.style.display = "none";
+    return;
+  }
 
-if(error){
-console.error(error);
-container.innerHTML='<p class="message">Could not load products. Please refresh.</p>';
-return;
-}
+  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+    showMessage("Choose a JPG, PNG or WebP image.", "error");
+    this.value = "";
+    preview.style.display = "none";
+    return;
+  }
 
-allProducts=data||[];
-displayProducts(allProducts);
-}
+  if (file.size > 4 * 1024 * 1024) {
+    showMessage("Image must be smaller than 4 MB.", "error");
+    this.value = "";
+    preview.style.display = "none";
+    return;
+  }
 
-function displayProducts(products){
-const container=document.getElementById("products");
-
-if(!products.length){
-container.innerHTML='<p class="message">No products available yet.</p>';
-return;
-}
-
-container.innerHTML="";
-
-products.forEach(function(product){
-const card=document.createElement("article");
-card.className="product";
-
-const img=document.createElement("img");
-img.src=safeImage(product.image_url);
-img.alt=product.name||"Product";
-
-img.onerror=function(){
-img.src="https://placehold.co/400x300?text=Pi+Market";
-};
-
-const info=document.createElement("div");
-info.className="info";
-
-const name=document.createElement("h3");
-name.textContent=product.name;
-
-const price=document.createElement("p");
-price.className="price";
-price.textContent=product.price+" Pi";
-
-const view=document.createElement("button");
-view.className="viewButton";
-view.textContent="View Details";
-view.onclick=function(){
-showDetails(product.id);
-};
-
-info.append(name,price,view);
-card.append(img,info);
-container.appendChild(card);
-});
-}
-
-function searchProducts(){
-const query=document.getElementById("search").value.toLowerCase().trim();
-
-const filtered=allProducts.filter(function(product){
-return String(product.name||"").toLowerCase().includes(query)||
-String(product.description||"").toLowerCase().includes(query);
-});
-
-displayProducts(filtered);
-}
-
-async function addProduct(){
-if(!appStudioSessionToken || !verifiedPiUser){
-alert("Please sign in with Pi before publishing a product.");
-return;
-}
-
-const name=document.getElementById("productName").value.trim();
-const price=document.getElementById("productPrice").value;
-const description=document.getElementById("productDescription").value.trim();
-const button=document.getElementById("publishButton");
-
-if(!name || !price || !description || !selectedImage){
-alert("Please fill in all fields and choose a product image.");
-return;
-}
-
-if(!Number.isFinite(Number(price)) || Number(price)<=0){
-alert("Please enter a valid price.");
-return;
-}
-
-button.disabled=true;
-button.textContent="Uploading image...";
-
-try{
-const extension=selectedImage.name.split(".").pop().toLowerCase();
-const fileName=Date.now()+"-"+Math.random().toString(36).slice(2)+"."+extension;
-
-const {data:uploadData,error:uploadError}=await supabaseClient.storage
-.from("product-images")
-.upload(fileName,selectedImage,{
-cacheControl:"3600",
-upsert:false
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = "block";
 });
 
-if(uploadError) throw uploadError;
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
 
-const {data:publicData}=supabaseClient.storage
-.from("product-images")
-.getPublicUrl(uploadData.path);
-
-const imageUrl=publicData.publicUrl;
-
-button.textContent="Saving product...";
-
-const {error:insertError}=await supabaseClient
-.from("products")
-.insert([{
-name:name,
-description:description,
-price:Number(price),
-image_url:imageUrl
-}]);
-
-if(insertError) throw insertError;
-
-alert("Product published successfully!");
-
-document.getElementById("productName").value="";
-document.getElementById("productPrice").value="";
-document.getElementById("productDescription").value="";
-document.getElementById("productImage").value="";
-
-selectedImage=null;
-
-const preview=document.getElementById("imagePreview");
-preview.src="";
-preview.style.display="none";
-
-document.getElementById("addForm").style.display="none";
-await loadProducts();
-
-}catch(error){
-console.error(error);
-alert("Could not publish product: "+(error.message||"Please try again."));
-}finally{
-button.disabled=false;
-button.textContent="Publish Product";
-}
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error("Could not read image."));
+    reader.readAsDataURL(file);
+  });
 }
 
-function showDetails(id){
-const product=allProducts.find(function(item){
-return String(item.id)===String(id);
+document.getElementById("productForm").addEventListener("submit", async function(event) {
+  event.preventDefault();
+  hideMessage();
+
+  if (!currentUser || !piAccessToken) {
+    showMessage("Please login with Pi first.", "error");
+    return;
+  }
+
+  const name = document.getElementById("productName").value.trim();
+  const description = document.getElementById("productDescription").value.trim();
+  const price = Number(document.getElementById("productPrice").value);
+  const whatsapp = document.getElementById("productWhatsapp").value.trim();
+  const imageFile = document.getElementById("productImage").files[0];
+
+  if (!name || !description || !whatsapp || !imageFile || !Number.isFinite(price) || price <= 0) {
+    showMessage("Please complete all product details.", "error");
+    return;
+  }
+
+  if (imageFile.size > 4 * 1024 * 1024) {
+    showMessage("Image must be smaller than 4 MB.", "error");
+    return;
+  }
+
+  const button = document.getElementById("publishBtn");
+  button.disabled = true;
+  button.textContent = "Publishing...";
+
+  try {
+    const imageBase64 = await fileToBase64(imageFile);
+
+    await callBackend({
+      action: "create",
+      accessToken: piAccessToken,
+      name,
+      description,
+      price,
+      whatsapp,
+      imageBase64
+    });
+
+    this.reset();
+    document.getElementById("imagePreview").style.display = "none";
+
+    showMessage("Your product has been published successfully.");
+    await loadProducts();
+
+  } catch (error) {
+    console.error("Publish error:", error);
+    showMessage(error.message || "Could not publish product.", "error");
+  } finally {
+    button.disabled = false;
+    button.textContent = "Publish Product";
+  }
 });
 
-if(!product)return;
+async function deleteProduct(productId) {
+  if (!currentUser || !piAccessToken) {
+    showMessage("Please login first.", "error");
+    return;
+  }
 
-document.getElementById("detailImage").src=safeImage(product.image_url);
-document.getElementById("detailName").textContent=product.name;
-document.getElementById("detailPrice").textContent=product.price+" Pi";
-document.getElementById("detailDescription").textContent=product.description;
-document.getElementById("detailsModal").style.display="block";
+  if (!confirm("Are you sure you want to delete this product?")) {
+    return;
+  }
+
+  try {
+    await callBackend({
+      action: "delete",
+      accessToken: piAccessToken,
+      productId
+    });
+
+    showMessage("Product deleted successfully.");
+    await loadProducts();
+
+  } catch (error) {
+    console.error("Delete error:", error);
+    showMessage(error.message || "Could not delete product.", "error");
+  }
 }
 
-function closeDetails(){
-document.getElementById("detailsModal").style.display="none";
-}
-
-function closeOnBackground(event){
-if(event.target.id==="detailsModal"){
-closeDetails();
-}
-}
-
+updateLoginUI();
+initializePi();
 loadProducts();
 </script>
+
 </body>
 </html>
-
